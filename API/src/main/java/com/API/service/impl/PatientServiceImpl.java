@@ -64,7 +64,7 @@ public class PatientServiceImpl implements IPatientService {
             LOGGER.info("Patient found: {}", JsonPrinter.toString(patientFound));
         } else LOGGER.error("Patient not found: {}", JsonPrinter.toString(patientSearched));
 
-        return Optional.of(patientFound);
+        return Optional.ofNullable(patientFound);
     }
 
     @Override

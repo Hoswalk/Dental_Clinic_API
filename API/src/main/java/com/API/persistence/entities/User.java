@@ -24,7 +24,7 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
-    private int dni;
+    private String dni;
 
     @Column(name = "badge_number", unique = true)
     private String badgeNumber;
