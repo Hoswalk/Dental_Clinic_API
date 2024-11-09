@@ -43,7 +43,7 @@ public class PatientFixtures {
         patient.setEmail("john.doe@gmail.com");
         patient.setPassword("password123");
         patient.setAddress(null);
-        patient.setPhone("555-1234");
+        patient.setPhone(null);
         return patient;
     }
 

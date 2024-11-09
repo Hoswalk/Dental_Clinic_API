@@ -8,7 +8,6 @@ import com.API.persistence.entities.userImpl.Patient;
 import com.API.persistence.repository.PatientRepository;
 import com.API.service.impl.PatientServiceImpl;
 import com.API.service.impl.UserServiceImpl;
-import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,15 +15,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.config.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
+//@MockitoSettings(strictness = Strictness.LENIENT) // Esta anotacion sirve para que modelmapper no sea tan estricto al momento de mapear datos - esta ya que en el metodo update lo tengo configurado para que pueda aceptar campos vacios y se puedan actualizar cosas especificas - se puede usar esta anotacion aqui o directamenten en el metodo que es la manera en la que esta siendo usada en este caso
 public class PatientServiceImplTest {
 
     @InjectMocks
@@ -45,19 +47,22 @@ public class PatientServiceImplTest {
 
     @BeforeEach
     public void setUp() {
-        // Inicializamos los objetos de prueba
-        patientRequestDto = new PatientRequestDto();
-        savedPatient = new Patient();
-        patientResponseDto = new PatientResponseDto();
-    }
 
-    @PostConstruct
-    public void init() {
-        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+        // Inicializamos los objetos de prueba
+        patientRequestDto = PatientFixtures.samplePatientRequestDto();
+        savedPatient = PatientFixtures.samplePatient();
+        patientResponseDto = PatientFixtures.samplePatientResponseDto();
+
+        // Verificar que no sean null
+        assertNotNull(patientRequestDto, "patientRequestDto is null");
+        assertNotNull(savedPatient, "savedPatient is null");
+        assertNotNull(patientResponseDto, "patientResponseDto is null");
     }
 
     @Test
     public void testSavePatient() {
+        //Given: patient types are configured in the setup
+
         // Configurar el comportamiento de los mocks
         when(userService.saveUser(patientRequestDto, Patient.class, "patient")).thenReturn(savedPatient);
         when(modelMapper.map(savedPatient, PatientResponseDto.class)).thenReturn(patientResponseDto);
@@ -75,7 +80,9 @@ public class PatientServiceImplTest {
     @Test
     public void testPatient_FindAll_ReturnsPatientDtoList(){
 
-        // Creamos una lista de pacientes para el mock del repositorio
+        //Given: patient types are configured in the setup
+
+        // List of patients for mock respository
         List<Patient> patientList = new ArrayList<>();
         patientList.add(savedPatient);
 
@@ -83,16 +90,17 @@ public class PatientServiceImplTest {
         List<PatientResponseDto> expectedResponse = new ArrayList<>();
         expectedResponse.add(patientResponseDto);
 
-        // Configuramos el comportamiento de los mocks
+        // Config mock behavior
         when(patientRepository.findAll()).thenReturn(patientList);
         when(modelMapper.map(savedPatient, PatientResponseDto.class)).thenReturn(patientResponseDto);
 
-        // Llamamos al método a probar
+        // Service method test
         List<PatientResponseDto> result = patientService.findAll();
 
-        // Verificamos que el resultado es el esperado
+        //Assert
         assertEquals(expectedResponse, result);
-        // Verificamos que el repositorio y el mapper fueron llamados una vez
+
+        // Verify repository method and mapper
         verify(patientRepository, times(1)).findAll();
         verify(modelMapper, times(1)).map(savedPatient, PatientResponseDto.class);
     }
@@ -100,110 +108,112 @@ public class PatientServiceImplTest {
     @Test
     public void testPatient_FindById_ReturnsPatientResponseDto(){
 
-        // Given: Creamos un objeto Patient y su correspondiente PatientResponseDto
-        Patient patient = new Patient(1L, "John", "Doe", "12345678", "patient-001", "john.doe@gmail.com", "password123", null, "555-1234");
+        // Given: patient types are configured in the setup
 
-        PatientResponseDto expectedResponse = PatientFixtures.samplePatientResponseDto();
+        // Config for mock repo
+        when(patientRepository.findById(1L)).thenReturn(Optional.of(savedPatient));
 
-        //config comportamiento repo
-        when(patientRepository.findById(1L)).thenReturn(Optional.of(patient));
+        // Config modelmapper
+        when(modelMapper.map(savedPatient, PatientResponseDto.class)).thenReturn(patientResponseDto);
 
-        //config modelmapper
-        when(modelMapper.map(patient, PatientResponseDto.class)).thenReturn(expectedResponse);
-
-        //metodo servicio
+        // Service method test
         Optional<PatientResponseDto> result = patientService.findPatientById(1L);
 
-        //assert
+        // Assert
         assertTrue(result.isPresent());
-        assertEquals(1L, expectedResponse.getId());
+        assertEquals(1L, patientResponseDto.getId());
         assertEquals(1L, result.get().getId());
 
-        //verify que se use el repositorio con el id especificado y que se utilice modelmapper
+        // Verify repository method and mapper
         verify(patientRepository, times(1)).findById(1L);
-        verify(modelMapper, times(1)).map(patient, PatientResponseDto.class);
+        verify(modelMapper, times(1)).map(savedPatient, PatientResponseDto.class);
     }
 
     @Test
     public void testPatient_FindByBadgeNumber_ReturnsPatientResponseDto(){
 
-        //Given: objeto patient y correspondiente responseDTO
-        Patient patient = PatientFixtures.samplePatient();
+        // Given: patient types are configured in the setup
 
-        PatientResponseDto expectedResponse = PatientFixtures.samplePatientResponseDto();
 
-        //config comportamiento del repo
-        when(patientRepository.findPatientByBadgeNumber(patient.getBadgeNumber())).thenReturn(Optional.of(patient));
+        // Config for mock repo
+        when(patientRepository.findPatientByBadgeNumber(savedPatient.getBadgeNumber())).thenReturn(Optional.of(savedPatient));
         //config modelmapper
-        when(modelMapper.map(patient, PatientResponseDto.class)).thenReturn(expectedResponse);
+        when(modelMapper.map(savedPatient, PatientResponseDto.class)).thenReturn(patientResponseDto);
 
-        //metodo servicio
+        // Service method test
         Optional<PatientResponseDto> result = patientService.findPatientByBadgeNumebr("patient-001");
 
-        //assert
+        // Assert
         assertTrue(result.isPresent());
         assertNotNull(result);
         assertEquals("patient-001", result.get().getBadgeNumber());
 
-        //verify
+        // Verify repository method and mapper
         verify(patientRepository, times(1)).findPatientByBadgeNumber("patient-001");
-        verify(modelMapper, times(1)).map(patient, PatientResponseDto.class);
+        verify(modelMapper, times(1)).map(savedPatient, PatientResponseDto.class);
     }
 
     @Test
     public void testPatient_UpdatePatient_ReturnsPatientResponseDto() throws ResourceNotFoundException {
-        //Given: patient, patientRequestDto, and PatientResponseDto
-        Patient patient = PatientFixtures.samplePatient();
 
-        PatientRequestDto patientUpdate = PatientFixtures.samplePatientRequestDto();
+        //lenient() esta siendo utlizada en este metodo para que modelmapper no sea estricto al momento de mapear ya qeu este metodo acepta valores individuales al momento de actualizar informacion sin importar solo un campo es null - al inicio de la clase esta la otra forma de utilizarlo que ya seria a nivel de clase, pero este caso solo es necesario para este metodo
 
-        PatientResponseDto patientUpdated = PatientFixtures.samplePatientResponseDto();
+        // Given: patient types are configured in the setup
 
-        //Config
-        when(patientRepository.findById(patient.getId())).thenReturn(Optional.of(patient));
-        when(modelMapper.map(patientUpdate, Patient.class)).thenReturn(patient);
-        when(modelMapper.map(patient, PatientResponseDto.class)).thenReturn(patientUpdated);
+        // Mock Configuration to handle Conditions.isNotNull()
+        Configuration mockConfig = mock(Configuration.class);
+        lenient().when(modelMapper.getConfiguration()).thenReturn(mockConfig);
+        lenient().when(mockConfig.setPropertyCondition(Conditions.isNotNull())).thenReturn(mockConfig);
 
-        PatientResponseDto result = patientService.updatePatient(patientUpdate, patient.getId());
+        // Config for mock repo
+        when(patientRepository.findById(savedPatient.getId())).thenReturn(Optional.of(savedPatient));
+        when(patientRepository.save(any(Patient.class))).thenReturn(savedPatient);
 
-        //assert
+        // Mocking the map method for PatientRequestDto to Patient
+        lenient().when(modelMapper.map(patientRequestDto, Patient.class)).thenReturn(savedPatient);
+
+        // Mocking the map method for Patient to PatientResponseDto
+        lenient().when(modelMapper.map(savedPatient, PatientResponseDto.class)).thenReturn(patientResponseDto);
+
+        // Service method test
+        PatientResponseDto result = patientService.updatePatient(patientRequestDto, savedPatient.getId());
+
+        // Assert
         assertNotNull(result);
-        assertEquals(patientUpdated, result);
+        assertEquals(patientResponseDto, result);
 
-        //verify invocations
-        verify(patientRepository, times(1)).findById(patient.getId());
-        verify(patientRepository, times(1)).save(patient);
-        verify(modelMapper).map(patientUpdate, Patient.class);
-        verify(modelMapper).map(patient, PatientResponseDto.class);
+        // Verify repository methods and mappers
+        verify(patientRepository, times(1)).findById(savedPatient.getId());
+        verify(patientRepository, times(1)).save(any(Patient.class));
+        verify(modelMapper).map(patientRequestDto, savedPatient);  // Mock for PatientRequestDto to Patient
+        verify(modelMapper).map(savedPatient, PatientResponseDto.class);  // Mock for Patient to PatientResponseDto
     }
 
     @Test
     public void testPatient_DeleteById_ReturnsNothing() throws ResourceNotFoundException {
 
-        //Given: obejeto patient y ID
-        Patient patient = new Patient(1L, "John", "Doe", "12345678", "patient-001", "john.doe@gmail.com", "password123", null, "555-1234");
+        // Given: patient types are configured in the setup
 
-        PatientResponseDto expectedResponse = PatientFixtures.samplePatientResponseDto();
 
-        // Configuramos el comportamiento del repositorio:
-        // 1. `findById` devuelve el `Patient` antes de la eliminación.
-        when(patientRepository.findById(patient.getId())).thenReturn(Optional.of(patient));
+        // Config for mock repo
+        // 1. `findById` returns `Patient` before delete it.
+        when(patientRepository.findById(savedPatient.getId())).thenReturn(Optional.of(savedPatient));
 
-        //2. `findById` requiere un mapeo de patient a patientResponseDto
-        when(modelMapper.map(patient, PatientResponseDto.class)).thenReturn(expectedResponse);
+        //2. `findById` required mapping from patient to patientResponseDto
+        when(modelMapper.map(savedPatient, PatientResponseDto.class)).thenReturn(patientResponseDto);
 
-        // 3. `deleteById` no hace nada cuando se le llama (ya que es `void`)
-        doNothing().when(patientRepository).deleteById(patient.getId());
+        // 3. `deleteById` does nothing because is a void method
+        doNothing().when(patientRepository).deleteById(savedPatient.getId());
 
-        //llamar al servicio
-        patientService.deletePatientById(patient.getId());
+        // Service method test
+        patientService.deletePatientById(savedPatient.getId());
 
         // Assert:
         // 1. Verificamos que `deleteById` fue llamado exactamente una vez con el ID especificado.
-        verify(patientRepository, times(1)).deleteById(patient.getId());
+        verify(patientRepository, times(1)).deleteById(savedPatient.getId());
         // 2. Verificamos que `findById` fue llamado para comprobar si el paciente existía antes de eliminarlo.
-        verify(patientRepository, times(1)).findById(patient.getId());
+        verify(patientRepository, times(1)).findById(savedPatient.getId());
         // 3. Verificamos que `modelMapper` fue llamado para mapear de patient a patientResponseDto
-        verify(modelMapper, times(1)).map(patient, PatientResponseDto.class);
+        verify(modelMapper, times(1)).map(savedPatient, PatientResponseDto.class);
     }
 }

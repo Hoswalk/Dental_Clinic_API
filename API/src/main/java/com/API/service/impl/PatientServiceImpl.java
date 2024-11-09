@@ -7,7 +7,6 @@ import com.API.persistence.entities.userImpl.Patient;
 import com.API.persistence.repository.PatientRepository;
 import com.API.service.IPatientService;
 import com.API.utils.JsonPrinter;
-import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
