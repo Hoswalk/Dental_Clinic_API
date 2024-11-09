@@ -8,6 +8,7 @@ import com.API.persistence.entities.userImpl.Patient;
 import com.API.persistence.repository.PatientRepository;
 import com.API.service.impl.PatientServiceImpl;
 import com.API.service.impl.UserServiceImpl;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
@@ -47,6 +49,11 @@ public class PatientServiceImplTest {
         patientRequestDto = new PatientRequestDto();
         savedPatient = new Patient();
         patientResponseDto = new PatientResponseDto();
+    }
+
+    @PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
     }
 
     @Test
@@ -141,6 +148,33 @@ public class PatientServiceImplTest {
         //verify
         verify(patientRepository, times(1)).findPatientByBadgeNumber("patient-001");
         verify(modelMapper, times(1)).map(patient, PatientResponseDto.class);
+    }
+
+    @Test
+    public void testPatient_UpdatePatient_ReturnsPatientResponseDto() throws ResourceNotFoundException {
+        //Given: patient, patientRequestDto, and PatientResponseDto
+        Patient patient = PatientFixtures.samplePatient();
+
+        PatientRequestDto patientUpdate = PatientFixtures.samplePatientRequestDto();
+
+        PatientResponseDto patientUpdated = PatientFixtures.samplePatientResponseDto();
+
+        //Config
+        when(patientRepository.findById(patient.getId())).thenReturn(Optional.of(patient));
+        when(modelMapper.map(patientUpdate, Patient.class)).thenReturn(patient);
+        when(modelMapper.map(patient, PatientResponseDto.class)).thenReturn(patientUpdated);
+
+        PatientResponseDto result = patientService.updatePatient(patientUpdate, patient.getId());
+
+        //assert
+        assertNotNull(result);
+        assertEquals(patientUpdated, result);
+
+        //verify invocations
+        verify(patientRepository, times(1)).findById(patient.getId());
+        verify(patientRepository, times(1)).save(patient);
+        verify(modelMapper).map(patientUpdate, Patient.class);
+        verify(modelMapper).map(patient, PatientResponseDto.class);
     }
 
     @Test

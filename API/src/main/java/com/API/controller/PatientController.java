@@ -44,7 +44,7 @@ public class PatientController {
 
     //PUT
     @PutMapping("/update/{id}")
-    public ResponseEntity<PatientResponseDto> update(@RequestBody PatientRequestDto patientRequestDto, Long id) throws ResourceNotFoundException {
+    public ResponseEntity<PatientResponseDto> update(@RequestBody PatientRequestDto patientRequestDto, @PathVariable Long id) throws ResourceNotFoundException {
         return new ResponseEntity<>(patientService.updatePatient(patientRequestDto, id), HttpStatus.OK);
     }
 

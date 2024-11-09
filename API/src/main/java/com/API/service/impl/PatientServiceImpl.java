@@ -7,6 +7,7 @@ import com.API.persistence.entities.userImpl.Patient;
 import com.API.persistence.repository.PatientRepository;
 import com.API.service.IPatientService;
 import com.API.utils.JsonPrinter;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
@@ -28,6 +29,12 @@ public class PatientServiceImpl implements IPatientService {
     private PatientRepository patientRepository;
 
     private final ModelMapper modelMapper;
+
+    // Configuración inicial del ModelMapper
+    /*@PostConstruct
+    public void init() {
+        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
+    }*/
 
     @Override
     public PatientResponseDto savePatient(PatientRequestDto patientRequestDto) {
@@ -86,13 +93,12 @@ public class PatientServiceImpl implements IPatientService {
 
         Patient patientUpdate = patientRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Patient not found."));
 
-        PatientResponseDto patientUpdated;
-
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
         modelMapper.map(patientRequestDto, patientUpdate);
+
         patientRepository.save(patientUpdate);
 
-        patientUpdated = modelMapper.map(patientUpdate, PatientResponseDto.class);
+        PatientResponseDto patientUpdated = modelMapper.map(patientUpdate, PatientResponseDto.class);
 
         return patientUpdated;
     }
