@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -23,14 +22,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 public class PatientControllerTest {
 
-    @InjectMocks
-    private PatientController patientController;
-
     @Mock
     private PatientServiceImpl patientService;
 
-    @Mock
-    private Logger logger;
+    @InjectMocks
+    private PatientController patientController;
 
     @Test
     public void test_Controller_SaveUser_Return_SavedPatientResponseDto(){
@@ -140,6 +136,8 @@ public class PatientControllerTest {
         //Assert
         assertNotNull(response);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+
+        //Verify
         verify(patientService).deletePatientById(patientId);
     }
 
