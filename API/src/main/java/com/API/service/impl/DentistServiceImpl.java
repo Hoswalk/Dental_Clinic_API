@@ -87,7 +87,7 @@ public class DentistServiceImpl implements IDentistService {
             LOGGER.info("Dentist found: {}", JsonPrinter.toString(dentistFound));
         } else LOGGER.error("Dentist not found: {}", JsonPrinter.toString(dentistSearched));
 
-        return Optional.of(dentistFound);
+        return Optional.ofNullable(dentistFound);
     }
 
     @Override

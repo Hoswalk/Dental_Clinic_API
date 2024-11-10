@@ -29,9 +29,6 @@ import java.util.Optional;
 //@MockitoSettings(strictness = Strictness.LENIENT) // Esta anotacion sirve para que modelmapper no sea tan estricto al momento de mapear datos - esta ya que en el metodo update lo tengo configurado para que pueda aceptar campos vacios y se puedan actualizar cosas especificas - se puede usar esta anotacion aqui o directamenten en el metodo que es la manera en la que esta siendo usada en este caso
 public class PatientServiceImplTest {
 
-    @InjectMocks
-    PatientServiceImpl patientService;
-
     @Mock
     PatientRepository patientRepository;
 
@@ -41,26 +38,29 @@ public class PatientServiceImplTest {
     @Mock
     ModelMapper modelMapper;
 
-    private PatientRequestDto patientRequestDto;
+    @InjectMocks
+    PatientServiceImpl patientService;
+
     private Patient savedPatient;
+    private PatientRequestDto patientRequestDto;
     private PatientResponseDto patientResponseDto;
 
     @BeforeEach
     public void setUp() {
 
-        // Inicializamos los objetos de prueba
-        patientRequestDto = PatientFixtures.samplePatientRequestDto();
+        // Initializing patient types mocks
         savedPatient = PatientFixtures.samplePatient();
+        patientRequestDto = PatientFixtures.samplePatientRequestDto();
         patientResponseDto = PatientFixtures.samplePatientResponseDto();
 
-        // Verificar que no sean null
-        assertNotNull(patientRequestDto, "patientRequestDto is null");
+        // Verify is not null
         assertNotNull(savedPatient, "savedPatient is null");
+        assertNotNull(patientRequestDto, "patientRequestDto is null");
         assertNotNull(patientResponseDto, "patientResponseDto is null");
     }
 
     @Test
-    public void testSavePatient() {
+    public void testPatient_SavePatient_ReturnsPatientResponseDto() {
         //Given: patient types are configured in the setup
 
         // Configurar el comportamiento de los mocks
