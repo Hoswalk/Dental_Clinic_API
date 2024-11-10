@@ -159,6 +159,4 @@ public class DentistControllerTest {
         // Verify
         verify(dentistService).deleteDentistById(savedDentist.getId());
     }
-
-
 }

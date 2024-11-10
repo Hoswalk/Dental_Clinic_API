@@ -15,13 +15,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class AppointmentRequestDto {
 
-    @NotNull(message = "Patient cannot be null.")
-    @Valid
-    private String patientBadgeNumber;
-
     @NotNull(message = "Dentist cannot be null.")
     @Valid
     private String dentistBadgeNumber;
+
+    @NotNull(message = "Patient cannot be null.")
+    @Valid
+    private String patientBadgeNumber;
 
     @FutureOrPresent(message = "Appointment date cannot be before today.")
     @NotNull(message = "Must specify date and appointment hour.")

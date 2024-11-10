@@ -117,7 +117,7 @@ public class AppointmentServiceImpl implements IAppointmentService {
 
         if (existingAppointment != null){
             //Seting new fields for update //
-             existingAppointment.setAppointmentDateHour(appointmentRequestDto.getAppointmentDateHour()); //
+            existingAppointment.setAppointmentDateHour(appointmentRequestDto.getAppointmentDateHour()); //
 
             //Save appointment
             Appointment updatedAppointment = appointmentRepository.save(existingAppointment);
