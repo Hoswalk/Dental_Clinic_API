@@ -2,10 +2,10 @@ package com.API.service;
 
 import com.API.dto.dtoRequest.DentistRequestDto;
 import com.API.dto.dtoResponse.DentistResponseDto;
+import com.API.event.DentistUnavailableEvent;
 import com.API.exception.ResourceNotFoundException;
 import com.API.mockData.DentistFixtures;
 import com.API.persistence.entities.userImpl.Dentist;
-import com.API.persistence.entities.userImpl.Patient;
 import com.API.persistence.repository.DentistRepository;
 import com.API.service.impl.DentistServiceImpl;
 import com.API.service.impl.UserServiceImpl;
@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
@@ -20,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.config.Configuration;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +38,9 @@ public class DentistServiceImplTest {
 
     @Mock
     ModelMapper modelMapper;
+
+    @Mock
+    ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     DentistServiceImpl dentistService;
@@ -177,6 +182,20 @@ public class DentistServiceImplTest {
     }
 
     @Test
+    public void testDentist_UpdateDentist_ThrowsException(){
+        // Given: patient types are configured in the setup
+
+
+        // When / Config mock repo
+        when(dentistRepository.findById(savedDentist.getId())).thenReturn(Optional.empty());
+
+        // Assert
+        assertThrows(ResourceNotFoundException.class, () ->
+            dentistService.updateDentist(dentistRequestDto, savedDentist.getId())
+        );
+    }
+
+    @Test
     public void testDentist_DeleteById_ReturnsNothing() throws ResourceNotFoundException {
         // Given: patient types are configured in the setup
 
@@ -198,5 +217,48 @@ public class DentistServiceImplTest {
         verify(dentistRepository, times(1)).deleteById(savedDentist.getId());
         verify(dentistRepository, times(1)).findById(savedDentist.getId());
         verify(modelMapper, times(1)).map(savedDentist, DentistResponseDto.class);
+    }
+
+    @Test
+    public void testDentist_DeleteById_ThrowsException(){
+        // Given: patient types are configured in the setup
+
+        // Config for mock repo
+        when(dentistRepository.findById(savedDentist.getId())).thenReturn(Optional.empty());
+
+        // Assert
+        assertThrows(ResourceNotFoundException.class, () -> dentistService.deleteDentistById(savedDentist.getId()));
+    }
+
+    @Test
+    public void testDentist_MarkDentistUnavailable(){
+        // Given: patient types are configured in the setup
+
+        // Parameters for event
+        String reason = "Sick";
+        savedDentist.setAvailable(true);
+
+        // Config for repo
+        when(dentistRepository.findById(savedDentist.getId())).thenReturn(Optional.of(savedDentist));
+        when(dentistRepository.save(savedDentist)).thenReturn(savedDentist);
+
+        // Service method test
+        dentistService.markDentistAsUnavailable(savedDentist.getId(), reason);
+
+        // Assert
+        // Verify dentistRepository is used for methods findById and save
+        verify(dentistRepository, times(1)).findById(savedDentist.getId());
+        verify(dentistRepository, times(1)).save(savedDentist);
+
+        // Values 'available' and 'unavailableReason' was successfully updated
+        assertFalse(savedDentist.isAvailable());
+        assertEquals(reason, savedDentist.getUnavailableReason());
+
+        // Capture and verify the event
+        ArgumentCaptor<DentistUnavailableEvent> eventCaptor = ArgumentCaptor.forClass(DentistUnavailableEvent.class);
+        verify(eventPublisher, times(1)).publishEvent(eventCaptor.capture());
+        DentistUnavailableEvent event = eventCaptor.getValue();
+        assertEquals(savedDentist.getId(), event.getDentistId());
+        assertEquals(reason, event.getReason());
     }
 }

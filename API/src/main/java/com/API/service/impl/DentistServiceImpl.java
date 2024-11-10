@@ -101,7 +101,7 @@ public class DentistServiceImpl implements IDentistService {
             LOGGER.info("Dentist found.");
         } else LOGGER.error("Dentist was not found");
 
-        return Optional.of(dentistFound);
+        return Optional.ofNullable(dentistFound);
     }
 
     @Override

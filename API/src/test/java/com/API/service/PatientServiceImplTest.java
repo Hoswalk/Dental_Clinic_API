@@ -190,6 +190,17 @@ public class PatientServiceImplTest {
     }
 
     @Test
+    public void testPatient_UpdatePatient_ThrowsException(){
+        // Given: patient types are configured in the setup
+
+        // Config mock repo
+        when(patientRepository.findById(savedPatient.getId())).thenReturn(Optional.empty());
+
+        // Assert
+        assertThrows(ResourceNotFoundException.class, () -> patientService.updatePatient(patientRequestDto, savedPatient.getId()));
+    }
+
+    @Test
     public void testPatient_DeleteById_ReturnsNothing() throws ResourceNotFoundException {
 
         // Given: patient types are configured in the setup
@@ -215,5 +226,16 @@ public class PatientServiceImplTest {
         verify(patientRepository, times(1)).findById(savedPatient.getId());
         // 3. Verificamos que `modelMapper` fue llamado para mapear de patient a patientResponseDto
         verify(modelMapper, times(1)).map(savedPatient, PatientResponseDto.class);
+    }
+
+    @Test
+    public void testPatient_DeleteById_ThrowsException(){
+        // Given: patient types are configured in the setup
+
+        // Config mock repo
+        when(patientRepository.findById(savedPatient.getId())).thenReturn(Optional.empty());
+
+        // Assert
+        assertThrows(ResourceNotFoundException.class, () -> patientService.deletePatientById(savedPatient.getId()));
     }
 }
