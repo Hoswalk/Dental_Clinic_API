@@ -195,4 +195,5 @@ Run tests using:
 - mvn test
 
 Conclusion
+
 This Dental Clinic API provides a backend solution for managing patients, dentists, and appointments in a dental clinic. It offers essential CRUD operations for managing patient and dentist data, as well as scheduling and managing appointments.
