@@ -1,6 +1,7 @@
 # Dental_Clinic_API
 
 Overview
+
 The Dental Clinic API is a backend service for managing patients, dentists, and appointments within a dental clinic. Also, scheduling and managing appointments. The project is built using Spring Boot, JPA, and MySQL.
 
 Features
