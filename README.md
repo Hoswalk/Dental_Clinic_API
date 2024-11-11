@@ -59,6 +59,7 @@ Example for MySQL:
 
 properties
 spring.datasource.url=jdbc:mysql://localhost:3306/dentalclinic
+
 spring.datasource.username=root
 spring.datasource.password=rootpassword
 spring.jpa.hibernate.ddl-auto=update
