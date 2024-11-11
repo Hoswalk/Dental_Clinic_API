@@ -183,12 +183,12 @@ Appointment
 - AppointmentResponseDto: Contains appointment details such as id, date, status, patientName, dentistName.
 
 Error Handling
-The application uses custom exception handling to respond with appropriate HTTP statuses for different errors:
+The application uses custom exception handling to respond to:
 
-404 - Not Found: For nonexistent patients, dentists, or appointments.
-400 - Bad Request: For invalid data in requests.
+- Resource not found
 
 Testing
+
 Unit and integration tests are implemented using JUnit and Mockito. The tests cover:
 
 Patient, dentist, and appointment CRUD operations.
