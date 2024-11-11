@@ -17,6 +17,7 @@ Technologies Used
 - MySQL (configured in the application.properties file)
 - Maven (for dependency management)
 - ModelMapper (for DTO mapping)
+- JUnit, and Mockito (for Testing)
 
 Project Structure
 src/
