@@ -125,18 +125,6 @@ public class AppointmentServiceImpl implements IAppointmentService {
             //Mapping to DTO
             appointmentResponseDto = mapToResponseDto(updatedAppointment, existingAppointment.getPatient(), existingAppointment.getDentist());
 
-             /*if (existingAppointment.getPatient() != null){
-                 appointmentResponseDto.setPatientResponseDto(
-                         modelMapper.map(existingAppointment.getPatient(), PatientResponseDto.class)
-                 );
-             }
-
-             if (existingAppointment.getDentist() != null){
-                 appointmentResponseDto.setDentistResponseDto(
-                         modelMapper.map(existingAppointment.getDentist(), DentistResponseDto.class)
-                 );
-             }*/
-
             return appointmentResponseDto;
         } else LOGGER.error("There was an error updating the appointment");
         throw new ResourceNotFoundException("Was not possible to update appointment with id: " + id + " because it is not in the database");

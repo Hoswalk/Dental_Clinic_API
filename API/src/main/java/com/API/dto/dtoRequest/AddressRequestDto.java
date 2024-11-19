@@ -19,7 +19,6 @@ public class AddressRequestDto {
 
     @Positive(message = "Number cannot be null or less than 0")
     @Digits(integer = 8, fraction = 0, message = "Number cannot be longer than 8 numbers.")
-    @NotNull
     @NotBlank
     private int number;
 
@@ -30,6 +29,4 @@ public class AddressRequestDto {
     @NotNull(message = "A postal code must be added.")
     @NotBlank
     private String postalCode;
-
-
 }

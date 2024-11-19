@@ -75,29 +75,6 @@ public class UserServiceImpl implements IUserService {
         return Optional.of(userFound);
     }
 
-    /*@Override
-    public Optional<String> findBadgeNumberByUser(Long userId) {
-
-        Optional<User> optionalUser = userRepository.findById(userId);
-
-        if (optionalUser.isPresent()){
-            User user = optionalUser.get();
-
-            if (user instanceof Dentist){
-                return Optional.of(((Dentist) user).getBadgeNumber());
-            } else if (user instanceof Patient) {
-                return Optional.of(((Patient) user).getBadgeNumber());
-            }
-        }
-        return Optional.empty();
-    }*/
-
-    /*@Override
-    public <T extends UserResponseDto> T findUserByBadgeNumber(String badgeNumber, Class<T> type) {
-
-        return type.cast(userRepository.findUserByBadgeNumber(badgeNumber));
-    }*/
-
     @Override
     public Optional<UserResponseDto> findUserByEmail(String email) {
 

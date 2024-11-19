@@ -29,12 +29,6 @@ public class PatientServiceImpl implements IPatientService {
 
     private final ModelMapper modelMapper;
 
-    // Configuración inicial del ModelMapper
-    /*@PostConstruct
-    public void init() {
-        modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
-    }*/
-
     @Override
     public PatientResponseDto savePatient(PatientRequestDto patientRequestDto) {
 
