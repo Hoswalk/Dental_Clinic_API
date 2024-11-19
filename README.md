@@ -1,7 +1,8 @@
 # Dental_Clinic_API
 
 Overview
-The Dental Clinic API is a backend service for managing patients, dentists, and appointments within a dental clinic. It allows the management of patient and dentist records, as well as scheduling and managing appointments. The project is built using Spring Boot, JPA, and MySQL.
+
+The Dental Clinic API is a backend service for managing patients, dentists, and appointments within a dental clinic. Also, scheduling and managing appointments. The project is built using Spring Boot, JPA, and MySQL.
 
 Features
 - Patient Management: Create, update, and retrieve patient information.
@@ -16,6 +17,7 @@ Technologies Used
 - MySQL (configured in the application.properties file)
 - Maven (for dependency management)
 - ModelMapper (for DTO mapping)
+- JUnit, and Mockito (for Testing)
 
 Project Structure
 src/
@@ -183,12 +185,12 @@ Appointment
 - AppointmentResponseDto: Contains appointment details such as id, date, status, patientName, dentistName.
 
 Error Handling
-The application uses custom exception handling to respond with appropriate HTTP statuses for different errors:
+The application uses custom exception handling to respond to:
 
-404 - Not Found: For nonexistent patients, dentists, or appointments.
-400 - Bad Request: For invalid data in requests.
+- Resource not found
 
 Testing
+
 Unit and integration tests are implemented using JUnit and Mockito. The tests cover:
 
 Patient, dentist, and appointment CRUD operations.
